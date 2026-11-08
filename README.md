@@ -19,9 +19,10 @@ python3 pomodoro.py
 ```
 
 On first run each day it asks how many pomodoros you're aiming for and lets
-you allocate them to named tasks. After that, running the same command
-resumes today's session (including an in-progress pomodoro, if the CLI or
-computer got interrupted mid-block).
+you allocate them to named tasks (yesterday's shortfall is pre-filled).
+After that, running the same command lets you continue today's session
+(including an in-progress pomodoro, if the CLI or computer got interrupted
+mid-block), start over, add tasks, or edit/remove tasks.
 
 Check progress without starting a timer:
 
@@ -38,10 +39,19 @@ python3 pomodoro.py --status
 
 When a work block or break ends, it notifies you (desktop notification +
 sound) and keeps re-sounding every few seconds until you press a key to
-dismiss it — meant to be hard to miss, not a toast you can ignore.
+dismiss it — meant to be hard to miss, not a toast you can ignore. While it
+rings, system volume is raised to 70% if it was lower (and unmuted), then
+restored.
 
 ## Data
 
 Session state is stored per day in `~/.pomodoro/YYYY-MM-DD.json`, saved
-after every tick, pause, and completion — a crash or reboot loses at most a
-few seconds of progress.
+every 30 seconds, on every completion, and on exit — a hard crash or reboot
+loses at most ~30 seconds of progress.
+
+Logs older than 7 days are deleted automatically on startup (the most
+recent previous day is always kept, for carryover). Change `KEEP_DAYS` at
+the top of `pomodoro.py` to keep more.
+
+`repair_pomodoro.py` fixes day files affected by the old duplicate-task bug
+(dry run by default; `--apply` to write, with a `.bak` backup).
